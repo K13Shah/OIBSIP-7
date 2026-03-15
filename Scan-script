@@ -1,0 +1,30 @@
+#!/bin/bash
+
+TARGET=$1
+OUTDIR="scan_results_$TARGET"
+
+mkdir -p $OUTDIR
+
+echo "Starting scan on $TARGET"
+echo "Results stored in $OUTDIR"
+
+# 1. Port scanning
+echo "[+] Running Nmap scan..."
+nmap -sS -sV -A -T4 $TARGET -oN $OUTDIR/nmap.txt
+
+# 2. Web server scan
+echo "[+] Running Nikto scan..."
+nikto -h http://$TARGET -output $OUTDIR/nikto.txt
+
+# 3. Technology detection
+echo "[+] Detecting technologies..."
+whatweb $TARGET > $OUTDIR/whatweb.txt
+
+# 4. OWASP ZAP automated scan
+echo "[+] Running ZAP baseline scan..."
+zap-baseline.py -t http://$TARGET -r $OUTDIR/zap_report.html
+
+echo "Scan completed."
+
+
+
