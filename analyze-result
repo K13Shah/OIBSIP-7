@@ -1,0 +1,33 @@
+import os
+
+directory = input("Enter scan result directory: ")
+
+files = os.listdir(directory)
+
+issues = []
+
+for file in files:
+    path = os.path.join(directory, file)
+
+    with open(path, "r", errors="ignore") as f:
+        data = f.read().lower()
+
+        if "vulnerable" in data:
+            issues.append((file, "Possible vulnerability detected"))
+
+        if "outdated" in data:
+            issues.append((file, "Outdated software"))
+
+        if "xss" in data:
+            issues.append((file, "Cross-Site Scripting risk"))
+
+        if "sql injection" in data:
+            issues.append((file, "SQL Injection risk"))
+
+print("\n---- Security Findings ----\n")
+
+for issue in issues:
+    print(f"{issue[0]} : {issue[1]}")
+
+if not issues:
+    print("No obvious issues detected.")
